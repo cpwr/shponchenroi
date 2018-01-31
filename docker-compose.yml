@@ -1,0 +1,46 @@
+version: '3.2'
+
+services:
+  nginx:
+    image: nginx:latest
+    container_name: nginx
+    restart: always
+    ports:
+      - "80:80"
+    volumes:
+      - .:/src
+      - ./config/nginx:/etc/nginx/conf.d
+      - /static:/static
+
+  web:
+    build: .
+    container_name: django
+    restart: always
+    env_file:
+      - .env
+    command: bash -c "python manage.py collectstatic --noinput && python manage.py makemigrations && python manage.py migrate && gunicorn shponchenroi.wsgi -b 0.0.0.0:8000 --reload"
+    depends_on:
+      - db
+    links:
+      - db
+      - redis
+    volumes:
+      - .:/src
+      - /static:/static
+    expose:
+      - "8000"
+
+  db:
+    image: postgres:latest
+    container_name: db
+    restart: always
+    env_file:
+      - .env
+    volumes:
+      - ./data/postgresql:/var/lib/postgresql/data/
+    expose:
+      - "5432"
+
+  redis:
+    image: redis:latest
+    hostname: redis
