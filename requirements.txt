@@ -12,3 +12,4 @@ singledispatch
 six
 typing
 gunicorn
+django-storages

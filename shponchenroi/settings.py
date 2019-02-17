@@ -25,7 +25,7 @@ SECRET_KEY = os.getenv('SECRET_KEY')
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = os.getenv('DEBUG')
 
-ALLOWED_HOSTS = ['web']
+ALLOWED_HOSTS = ['localhost', '0.0.0.0']
 
 EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_HOST_USER = os.environ.get("EMAIL_USER")
@@ -46,6 +46,9 @@ INSTALLED_APPS = [
 
     'psycopg2',
     'graphene_django',
+
+    'trainings',
+    'payments',
 
 ]
 
@@ -126,16 +129,7 @@ USE_L10N = True
 
 USE_TZ = True
 
-
-# Static files (CSS, JavaScript, Images)
-# https://docs.djangoproject.com/en/2.0/howto/static-files/
-STATICFILES_FINDERS = [
-    'django.contrib.staticfiles.finders.FileSystemFinder',
-    'django.contrib.staticfiles.finders.AppDirectoriesFinder',
-]
-
-STATIC_ROOT = os.path.join(BASE_DIR, "/src/static/")
-STATIC_URL = '/static/'
+AUTH_USER_MODEL = "auth.User"
 
 GRAPHENE = {
     'SCHEMA': 'shponchenroi.schema.schema'
@@ -144,4 +138,34 @@ GRAPHENE = {
 REDIS_HOST = os.environ.get('REDIS_HOST')
 REDIS_PORT = os.environ.get('REDIS_PORT')
 REDIS_DB = os.environ.get('REDIS_DB')
+
+
+# Static files (CSS, JavaScript, Images)
+# https://docs.djangoproject.com/en/2.0/howto/static-files/
+STATICFILES_FINDERS = [
+    'django.contrib.staticfiles.finders.FileSystemFinder',
+    'django.contrib.staticfiles.finders.AppDirectoriesFinder',
+]
+
+if not DEBUG:
+    AWS_ACCESS_KEY_ID = os.environ.get("AWS_ACCESS_KEY_ID", "AKIAI75JNSNRHIFEW3JQ")
+    AWS_SECRET_ACCESS_KEY = os.environ.get("AWS_SECRET_ACCESS_KEY", "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")
+    AWS_STORAGE_BUCKET_NAME = os.environ.get("AWS_STORAGE_BUCKET_NAME", "aus-mobile-app-s3")
+    AWS_S3_CUSTOM_DOMAIN = '%s.s3.amazonaws.com' % AWS_STORAGE_BUCKET_NAME
+    AWS_S3_OBJECT_PARAMETERS = {
+        'CacheControl': 'public, max-age=31536000',
+    }
+    AWS_LOCATION = 'static'
+    STATICFILES_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
+    DEFAULT_FILE_STORAGE = 'tsc.storage_backends.MediaStorage'
+    AWS_AUTO_CREATE_BUCKET= True
+    AWS_BUCKET_ACL = 'public-read'
+    AWS_DEFAULT_ACL = 'public-read'
+    MEDIAFILES_LOCATION = 'media'
+else:
+    STATIC_URL = '/static/'
+    STATIC_ROOT = 'static/'
+
+    MEDIA_ROOT = os.path.join(BASE_DIR, 'media/')
+    MEDIA_URL = '/media/'
 

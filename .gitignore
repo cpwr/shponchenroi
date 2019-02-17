@@ -86,7 +86,7 @@ celerybeat-schedule
 .venv
 venv/
 ENV/
-/env/
+env/
 
 # Spyder project settings
 .spyderproject
@@ -103,3 +103,5 @@ ENV/
 
 /data/
 .idea/*
+.pytest_cache/
+static/
